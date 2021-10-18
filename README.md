@@ -14,14 +14,14 @@ npm install best-react-pagination --save
 ```
 
 ```javascript
-import Index from "best-react-pagination";
+import Pagination from "best-react-pagination";
 
 const YourComponent: FC = () => {
   const [index, setIndex] = useState(0);
 
   return (
     // Your code
-    <Index
+    <Pagination
       paginationStart={0}
       currentIndex={index}
       setIndex={setIndex}
