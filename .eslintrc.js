@@ -23,8 +23,10 @@ module.exports = {
     ecmaVersion: 2021,
     sourceType: "module",
   },
+  ignorePatterns: [".eslintrc.js"],
   rules: {
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
   },
   settings: {
     react: {

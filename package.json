@@ -13,7 +13,11 @@
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack serve --config demo/webpack.config.js --hot --mode development",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "prettier": "prettier  --write --no-error-on-unmatched-pattern demo/src/**/*.{ts,tsx}",
+    "lint": "eslint --debug demo/src/",
+    "lint:write": "eslint --debug demo/src/ --fix",
+    "prepare": "npx husky install"
   },
   "author": "Dmitry Tsybizov",
   "license": "ISC",
@@ -21,9 +25,8 @@
     "url": "https://github.com/97Dmitry/best-react-pagination/issues"
   },
   "homepage": "https://github.com/97Dmitry/best-react-pagination#readme",
-  "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+  "peerDependencies": {
+    "react": ">=16.8"
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",
@@ -44,8 +47,12 @@
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.26.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^7.0.2",
+    "husky": "^7.0.4",
     "jest": "^27.2.5",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.5.1",
+    "react": "17.0.2",
+    "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.3.0",
