@@ -163,7 +163,11 @@ const Pagination: FC<IPagination> = ({
             );
           })}
           {currentIndex < (paginationStart === 0 ? 3 : 4) ? (
-            <li className={itemClass} style={isDefaultStyles ? defaultStyles.itemClass : undefined}>{`>>`}</li>
+            <li
+              className={itemClass}
+              style={isDefaultStyles ? defaultStyles.itemClass : undefined}
+              onClick={() => setIndex(currentIndex + 1)}
+            >{`>>`}</li>
           ) : (
             <li
               className={disableItemClass}
@@ -202,7 +206,7 @@ const Pagination: FC<IPagination> = ({
 
           {currentIndex < (paginationStart === 0 ? 3 : 4)
             ? countItems.map((el) => {
-                if (paginationStart === 0 ? currentIndex + 1 : currentIndex === el) {
+                if (paginationStart === 0 ? currentIndex + 1 === el : currentIndex === el) {
                   return (
                     <li
                       className={selectedItemClass}
@@ -236,6 +240,35 @@ const Pagination: FC<IPagination> = ({
           {currentIndex > (paginationStart === 0 ? 2 : 3) &&
           (paginationStart === 0 ? currentIndex : currentIndex - 1) < totalPages ? (
             <>
+              {currentIndex === (paginationStart === 0 ? totalPages - 2 : totalPages - 1) && (
+                <li
+                  className={itemClass}
+                  style={isDefaultStyles ? defaultStyles.itemClass : undefined}
+                  onClick={() => setIndex(paginationStart === 0 ? totalPages - 4 : totalPages - 3)}
+                >
+                  {totalPages - 3}
+                </li>
+              )}
+
+              {currentIndex === (paginationStart === 0 ? totalPages - 1 : totalPages) && (
+                <>
+                  <li
+                    className={itemClass}
+                    style={isDefaultStyles ? defaultStyles.itemClass : undefined}
+                    onClick={() => setIndex(paginationStart === 0 ? totalPages - 4 : totalPages - 3)}
+                  >
+                    {totalPages - 3}
+                  </li>
+                  <li
+                    className={itemClass}
+                    style={isDefaultStyles ? defaultStyles.itemClass : undefined}
+                    onClick={() => setIndex(paginationStart === 0 ? totalPages - 3 : totalPages - 2)}
+                  >
+                    {totalPages - 2}
+                  </li>
+                </>
+              )}
+
               <li
                 className={itemClass}
                 style={isDefaultStyles ? defaultStyles.itemClass : undefined}
@@ -243,9 +276,11 @@ const Pagination: FC<IPagination> = ({
               >
                 {paginationStart === 0 ? currentIndex : currentIndex - 1}
               </li>
+
               <li className={selectedItemClass} style={isDefaultStyles ? defaultStyles.selectedItemClass : undefined}>
                 {paginationStart === 0 ? currentIndex + 1 : currentIndex}
               </li>
+
               {currentIndex < (paginationStart === 0 ? totalPages - 1 : totalPages) ? (
                 <li
                   className={itemClass}
