@@ -7,7 +7,7 @@ const App: FC = () => {
 
   return (
     <>
-      <Pagination paginationStart={0} currentIndex={index} setIndex={setIndex} totalPages={10} isDefaultStyles={true} />
+      <Pagination paginationStart={1} currentIndex={index} setIndex={setIndex} totalPages={10} isDefaultStyles={true} />
     </>
   );
 };

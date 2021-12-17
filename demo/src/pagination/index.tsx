@@ -60,6 +60,7 @@ const Pagination: FC<IPagination> = ({
       borderRadius: "4px",
       margin: "0 2px",
       backgroundColor: "#45c954",
+      userSelect: "none",
     },
     selectedItemClass: {
       display: "inline",
@@ -68,6 +69,7 @@ const Pagination: FC<IPagination> = ({
       borderRadius: "4px",
       margin: "0 2px",
       backgroundColor: "#48bbff",
+      userSelect: "none",
     },
     disableItemClass: {
       display: "inline",
@@ -75,6 +77,7 @@ const Pagination: FC<IPagination> = ({
       padding: "6px 12px",
       borderRadius: "4px",
       margin: "0 2px",
+      userSelect: "none",
     },
   };
 
