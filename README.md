@@ -2,10 +2,7 @@
 
 [![NPM](https://nodei.co/npm/best-react-pagination.png?downloads=true)](https://nodei.co/npm/best-react-pagination/)
 
-**React component to render a pagination.**
-
-# WARNING 
-Now correct works only with ```paginationStart={1} ```
+**Simple and stylized react component to render a pagination.**
 
 ## Installation
 
