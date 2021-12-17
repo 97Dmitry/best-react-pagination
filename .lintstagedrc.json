@@ -1,3 +1,3 @@
 {
-  "demo/src/**/*.(ts|tsx)": ["npm run lint:write", "npm run prettier", "git add"]
+  "demo/src/**/*.(ts|tsx)": ["npm run lint:write", "npm run prettier"]
 }
