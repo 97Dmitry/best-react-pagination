@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "baseUrl": "lib",
     "noImplicitAny": true,
     "esModuleInterop": true,
     "module": "CommonJS",
@@ -9,12 +8,14 @@
     "target": "ESNext",
     "lib": ["ESNext", "dom"],
     "declaration": true,
+    "declarationDir": "dist",
     "jsx": "react",
     "strict": true,
     "allowJs": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "downlevelIteration": true
   },
-  "include": ["./lib/**/*"],
+  "include": ["./lib/index.tsx"],
   "exclude": [
     "node_modules",
     "dist",
