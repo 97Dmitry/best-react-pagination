@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-interface IPagination {
+interface PaginationProps {
     paginationStart: 0 | 1;
     currentIndex: number;
     totalPages: number;
@@ -12,5 +12,5 @@ interface IPagination {
     disableItemClass?: string;
     className?: string;
 }
-declare const Pagination: FC<IPagination>;
+declare const Pagination: FC<PaginationProps>;
 export default Pagination;
