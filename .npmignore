@@ -1,0 +1,15 @@
+lib
+demo
+dist/components
+.idea
+.babelrc
+.editorconfig
+.eslintignore
+.eslintrc.js
+.lintstagedrc.json
+commitlint.config.js
+package-lock.json
+webpack.config.ts
+tsconfig.json
+.husky
+husky.config.js
