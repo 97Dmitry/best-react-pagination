@@ -11,3 +11,5 @@ commitlint.config.js
 package-lock.json
 webpack.config.ts
 tsconfig.json
+.husky
+husky.config.js
