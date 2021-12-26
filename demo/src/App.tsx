@@ -5,13 +5,14 @@ import Pagination from "./Pagination";
 const App: FC = () => {
   const [index, setIndex] = useState(1);
   const totalPages = 10;
+  const paginationStart = 1;
 
-  console.log(`Current: ${index}. Total: ${totalPages}`);
+  console.log(`Current: ${index}. Total: ${totalPages}, PaginationStart: ${paginationStart}`);
 
   return (
     <>
       <Pagination
-        paginationStart={1}
+        paginationStart={paginationStart}
         currentIndex={index}
         setIndex={setIndex}
         totalPages={totalPages}

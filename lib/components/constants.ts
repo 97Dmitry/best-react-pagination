@@ -16,6 +16,8 @@ export const defaultStyles: Record<defaultStylesEnum, React.CSSProperties> = {
     alignItems: "center",
     width: "100%",
     bottom: 0,
+
+    fontSize: "16px",
   },
   itemListClass: {
     padding: "10px 0",
