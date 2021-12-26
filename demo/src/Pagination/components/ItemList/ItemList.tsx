@@ -1,5 +1,6 @@
-import React, { FC } from "react";
-import { defaultStyles } from "../constants";
+import React, { FC, useContext } from "react";
+import { ThemeContext } from "../../index";
+import Styler from "../../utils/Styler";
 
 interface ItemListProps {
   isDefaultStyles: boolean | undefined;
@@ -7,8 +8,11 @@ interface ItemListProps {
 }
 
 const ItemList: FC<ItemListProps> = ({ isDefaultStyles, itemListClass, children }) => {
+  const themeContext = useContext(ThemeContext);
+  const styles = new Styler(themeContext.theme);
+
   return (
-    <ul className={itemListClass} style={isDefaultStyles ? defaultStyles.itemListClass : undefined}>
+    <ul className={itemListClass} style={isDefaultStyles ? styles.itemListClass() : undefined}>
       {children}
     </ul>
   );

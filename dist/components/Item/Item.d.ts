@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { defaultStylesEnum } from "../constants";
+import { DefaultStylesEnum } from "../../utils/constants";
 interface ItemProps {
     isDefaultStyles: boolean | undefined;
     itemClass: string;
-    itemStyle: defaultStylesEnum;
+    itemStyle: DefaultStylesEnum;
     onClick?: () => void;
 }
 declare const Item: FC<ItemProps>;
