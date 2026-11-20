@@ -1,24 +1,12 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "esModuleInterop": true,
-    "module": "CommonJS",
-    "sourceMap": true,
-    "target": "ESNext",
-    "lib": ["ESNext", "dom"],
-    "declaration": true,
-    "declarationDir": "dist",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "jsx": "react",
     "strict": true,
-    "allowJs": true,
-    "moduleResolution": "node",
-    "downlevelIteration": true
+    "noEmit": true,
+    "types": ["node", "vite/client"]
   },
-  "include": ["./lib/index.tsx"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "test"
-  ]
+  "include": ["lib", "demo/src", "e2e", "*.config.ts"]
 }

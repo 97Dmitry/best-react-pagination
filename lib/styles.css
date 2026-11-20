@@ -1,0 +1,90 @@
+:where([data-pagination-variant="default"], [data-pagination-variant="compact"]) {
+  --_brp-control-size: 2.75rem;
+  --_brp-gap: 0.375rem;
+  color: var(--brp-text, #153e37);
+}
+
+:where([data-pagination-variant="compact"]) {
+  --_brp-control-size: 2rem;
+  --_brp-gap: 0.25rem;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--brp-gap, var(--_brp-gap));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] {
+  display: grid;
+  place-items: center;
+  min-block-size: var(--brp-control-size, var(--_brp-control-size));
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item="ellipsis"] {
+  min-inline-size: 1.25rem;
+  color: var(--brp-muted, #526860);
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button {
+  box-sizing: border-box;
+  appearance: none;
+  min-block-size: var(--brp-control-size, var(--_brp-control-size));
+  min-inline-size: var(--brp-control-size, var(--_brp-control-size));
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  padding: 0 0.5em;
+  border: 1px solid var(--brp-border, #748980);
+  border-radius: var(--brp-radius, 0.5rem);
+  background: var(--brp-background, #ffffff);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where(:hover:not([aria-disabled], [aria-current])) {
+  background: var(--brp-hover, #e9f5ec);
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-current="page"]) {
+  border-color: var(--brp-accent, #165347);
+  background: var(--brp-accent, #165347);
+  color: var(--brp-on-accent, #ffffff);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-disabled="true"]) {
+  color: var(--brp-muted, #526860);
+  cursor: default;
+  opacity: 0.65;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where(:focus-visible) {
+  outline: 2px solid var(--brp-focus, #176c58);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+@media (forced-colors: active) {
+  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-current="page"]) {
+    border-color: Highlight;
+  }
+
+  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-disabled="true"]) {
+    border-color: GrayText;
+    color: GrayText;
+    opacity: 1;
+  }
+
+  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where(:focus-visible) {
+    outline-color: Highlight;
+  }
+}

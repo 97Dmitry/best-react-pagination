@@ -1,0 +1,174 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #18332e;
+  background: #f3f8f4;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-inline-size: 62rem;
+  padding: clamp(2rem, 7vw, 5rem) clamp(1rem, 4vw, 2.5rem);
+  margin-inline: auto;
+}
+
+.intro {
+  padding-block-end: 2.75rem;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 6vw, 3.6rem);
+  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+}
+
+.intro p {
+  max-inline-size: 36rem;
+  margin-block-start: 0.75rem;
+  color: #47645b;
+  line-height: 1.5;
+}
+
+.intro__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-block-start: 1.25rem;
+}
+
+.intro__links code {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  background: #e0eee5;
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+.intro a {
+  color: #165347;
+  text-underline-offset: 0.2em;
+}
+
+.example {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 1.25rem 2rem;
+  padding: 1.5rem clamp(1rem, 3vw, 2rem);
+  border-block-start: 1px solid #cbdcd3;
+  background: #fff;
+}
+
+.example:last-child {
+  border-block-end: 1px solid #cbdcd3;
+}
+
+.example h2 {
+  margin-block-end: 0.375rem;
+  font-size: 1.125rem;
+}
+
+.example code,
+.example__preview p {
+  color: #4e665e;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.example__preview p {
+  margin-block-end: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-pagination [data-pagination-list] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.custom-pagination [data-pagination-item="ellipsis"] {
+  padding-inline: 0.25rem;
+  color: #6b557c;
+}
+
+.custom-pagination [data-pagination-item] {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.custom-pagination button {
+  box-sizing: border-box;
+  min-inline-size: 2.5rem;
+  min-block-size: 2.5rem;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  padding-inline: 0.5rem;
+  border: 1px solid #785987;
+  border-radius: 2rem;
+  background: #f3e9f8;
+  color: #4e2c62;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.custom-pagination button:hover:not([aria-disabled], [aria-current]) {
+  background: #eaddf2;
+}
+
+.custom-pagination button[aria-current="page"] {
+  border-color: #5f3977;
+  color: #fff;
+  background: #5f3977;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.custom-pagination button[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.custom-pagination button:focus-visible {
+  outline: 2px solid #5f3977;
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+@media (forced-colors: active) {
+  .custom-pagination button[aria-current="page"] {
+    border-color: Highlight;
+  }
+
+  .custom-pagination button[aria-disabled="true"] {
+    border-color: GrayText;
+    color: GrayText;
+    opacity: 1;
+  }
+
+  .custom-pagination button:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+@media (max-width: 43rem) {
+  .example {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
