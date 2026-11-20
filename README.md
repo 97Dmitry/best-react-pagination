@@ -55,6 +55,8 @@ Use `getPageHref` when each page has its own URL. Read the current page from you
 
 Use `onPageChange` or `setIndex` in button mode. An `onPageChange` handler can update the controlled index and start work such as loading results. `getPageHref` uses native navigation and takes the place of those callbacks in link mode. Both modes support the same built-in styles and range options.
 
+The demo catalogue fetches a local JSON dataset and uses the page in the URL to select the results it displays.
+
 ## Unstyled mode
 
 Use `isDefaultStyles={false}` or omit the flag. Apply your own CSS through `className` and the documented selectors. The component provides the navigation landmark, list, buttons and keyboard behavior.
@@ -97,9 +99,9 @@ Use `isDefaultStyles={false}` or omit the flag. Apply your own CSS through `clas
 | --- | --- |
 | `[data-pagination]` | Navigation root |
 | `[data-pagination-list]` | Page list |
-| `[data-pagination-item="page"]` | List item around a page button |
-| `[data-pagination-item="previous"]`, `[data-pagination-item="next"]` | List items around navigation buttons |
-| `[data-pagination-item="ellipsis"]` | Gap between visible page numbers |
+| `[data-pagination-item="page"]` | List item around a page control |
+| `[data-pagination-item="previous"]`, `[data-pagination-item="next"]` | List items around navigation controls |
+| `[data-pagination-item="ellipsis"]` | Gap representing omitted pages |
 | `[data-pagination-control]` | Button or link inside a pagination item |
 | `[data-pagination-control][aria-current="page"]` | Current page |
 | `[data-pagination-control][aria-disabled="true"]` | Navigation control at a boundary |
