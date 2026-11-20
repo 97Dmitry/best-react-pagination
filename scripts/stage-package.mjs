@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const registry = "https://registry.npmjs.org";
 
-export async function publishPackage(tarball, { sha, run = execFileSync, lookup = fetch }) {
+export async function stagePackage(tarball, { sha, run = execFileSync, lookup = fetch }) {
   if (!tarball || !sha) {
     throw new Error("A verified npm archive and GITHUB_SHA are required.");
   }
@@ -13,7 +13,7 @@ export async function publishPackage(tarball, { sha, run = execFileSync, lookup 
       encoding: "utf8",
     }).split(/\s+/, 1);
     if (head !== sha) {
-      console.log("Skipping publication because this run is no longer the head of main.");
+      console.log("Skipping npm staging because this run is no longer the head of main.");
     }
     return head === sha;
   }
@@ -46,11 +46,11 @@ export async function publishPackage(tarball, { sha, run = execFileSync, lookup 
 
   // An explicit latest tag would bypass npm's protection against publishing an older stable version as latest.
   const tag = version.split("+", 1)[0].includes("-") ? ["--tag", "next"] : [];
-  run("npm", ["publish", archive, "--access", "public", ...tag, "--ignore-scripts", "--registry", registry], {
+  run("npm", ["stage", "publish", archive, "--access", "public", ...tag, "--ignore-scripts", "--registry", registry], {
     stdio: "inherit",
   });
 }
 
 if (import.meta.main) {
-  await publishPackage(process.argv[2], { sha: process.env.GITHUB_SHA });
+  await stagePackage(process.argv[2], { sha: process.env.GITHUB_SHA });
 }
