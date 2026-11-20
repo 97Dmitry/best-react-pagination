@@ -1,0 +1,41 @@
+name: Verify and publish npm package
+
+on:
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    if: github.repository == '97Dmitry/best-react-pagination' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: npm-publish
+      queue: max
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: verified-npm-package
+          path: ${{ runner.temp }}/verified-npm-package
+          digest-mismatch: error
+      - name: Publish verified package to npm
+        env:
+          NPM_TARBALL: ${{ runner.temp }}/verified-npm-package/npm-package.tgz
+        run: node scripts/publish-package.mjs "$NPM_TARBALL"

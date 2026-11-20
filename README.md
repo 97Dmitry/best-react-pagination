@@ -132,3 +132,11 @@ npm run test:a11y
 The library and demo share the component in `lib/`. `npm pack` builds the distributable files. The package check installs the resulting archive in clean consumers and checks server rendering, TypeScript declarations, and the CSS export on React 16.8, 17, 18, and 19.
 
 The browser suite combines axe-core scans with keyboard, forced-color, and reflow checks. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to run it with an existing local Chromium installation.
+
+## Publishing
+
+Merging into `main` runs CI and then publishes the same tarball that passed the package tests. A version already on npm or a run for an older commit is skipped. Stable versions publish to `latest`, and prereleases publish to `next`.
+
+Before the first release, add a GitHub Actions trusted publisher in the npm package settings. Use owner `97Dmitry`, repository `best-react-pagination`, and workflow filename `publish.yml`. Leave the environment empty and enable direct `npm publish`. An optional label is `GitHub Actions - main release`. The first successful publish must occur within two days of adding the publisher. [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
+
+If this setup is completed after a publish job fails, rerun the failed job on the latest `main` run to reuse its verified tarball. Rerun the entire workflow if the artifact has expired.
