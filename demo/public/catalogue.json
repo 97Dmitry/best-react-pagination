@@ -1,0 +1,20 @@
+[
+  { "name": "Breadcrumbs", "description": "Show where the current page sits in a site's hierarchy." },
+  { "name": "Button", "description": "Trigger an action such as saving changes or opening a dialog." },
+  { "name": "Checkbox", "description": "Select any number of independent options." },
+  { "name": "Data table", "description": "Compare values across rows and columns." },
+  { "name": "Dialog", "description": "Focus attention on a decision or a short task." },
+  { "name": "Disclosure", "description": "Reveal details on demand while keeping the main view concise." },
+  { "name": "Filter chip", "description": "Show an active filter and offer a way to remove it." },
+  { "name": "Form field", "description": "Associate an input with its label, instructions, and errors." },
+  { "name": "Listbox", "description": "Choose one or more entries from a list." },
+  { "name": "Menu", "description": "Group commands for the current view or selection." },
+  { "name": "Pagination", "description": "Move through a set of results a page at a time." },
+  { "name": "Progress bar", "description": "Indicate how far a task has progressed." },
+  { "name": "Radio group", "description": "Choose one option from a set of alternatives." },
+  { "name": "Search box", "description": "Enter terms to find content in a site or list." },
+  { "name": "Slider", "description": "Select a value within a continuous range." },
+  { "name": "Switch", "description": "Turn a setting on or off." },
+  { "name": "Tabs", "description": "Switch between related views in the same space." },
+  { "name": "Tooltip", "description": "Offer a brief explanation for a focused or hovered control." }
+]

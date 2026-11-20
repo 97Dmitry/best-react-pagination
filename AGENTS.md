@@ -16,4 +16,4 @@
 
 - Make demo changes in `demo/`. `.github/workflows/pages.yml` builds and deploys the [public demo](https://97dmitry.github.io/best-react-pagination/) on pushes to `main`, independently of npm approval. The repository's Pages source is **GitHub Actions**.
 - GitHub Pages serves this project under `/best-react-pagination/`. The workflow sets Vite's base path from the Pages configuration. To reproduce the production build locally, run `npm run build:demo -- --base /best-react-pagination/`.
-- After a demo deployment, open the public URL and check Default, Compact, and Custom CSS, including keyboard input.
+- After a demo deployment, check Default, Compact, and Custom CSS with keyboard input. Open the component catalogue at `?page=2#catalogue` to check its data request and URL-backed navigation.

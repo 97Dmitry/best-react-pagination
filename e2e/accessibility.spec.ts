@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("navigation")).toHaveCount(3);
+  await expect(page.getByRole("navigation")).toHaveCount(4);
 });
 
 test("the demo has no detectable WCAG 2.2 AA violations before or after navigation", async ({ page }) => {
@@ -55,7 +55,7 @@ test("keyboard activation changes pages and preserves focus at the boundary", as
 test("the current page and focus remain distinguishable in forced colors", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active" });
   for (const navigation of await page.getByRole("navigation").all()) {
-    const current = navigation.locator('button[aria-current="page"]');
+    const current = navigation.locator('[data-pagination-control][aria-current="page"]');
     await expect(current).toHaveCSS("text-decoration-line", "underline");
     await current.focus();
     await expect(current).toHaveCSS("outline-style", "solid");
@@ -64,7 +64,7 @@ test("the current page and focus remain distinguishable in forced colors", async
 
 test("controls reflow at a narrow width with enlarged text and keep usable targets", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
-  for (const control of await page.getByRole("button").all()) {
+  for (const control of await page.locator("[data-pagination-control]").all()) {
     const box = await control.boundingBox();
     expect(box?.width).toBeGreaterThanOrEqual(24);
     expect(box?.height).toBeGreaterThanOrEqual(24);
@@ -74,8 +74,8 @@ test("controls reflow at a narrow width with enlarged text and keep usable targe
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
 
   for (const navigation of await page.getByRole("navigation").all()) {
-    await navigation.locator('[data-pagination-item="page"] button').last().evaluate((button) => {
-      button.textContent = String(Number.MAX_SAFE_INTEGER);
+    await navigation.locator('[data-pagination-item="page"] [data-pagination-control]').last().evaluate((control) => {
+      control.textContent = String(Number.MAX_SAFE_INTEGER);
     });
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
@@ -94,4 +94,41 @@ test("RTL layouts follow reading direction while Next advances the page", async 
   await next.focus();
   await page.keyboard.press("Enter");
   await expect(compact.getByRole("button", { name: "Page 6", exact: true })).toHaveAttribute("aria-current", "page");
+});
+
+test("catalogue links load their page and preserve it across reload and browser history", async ({ page }) => {
+  const catalogue = page.getByRole("region", { name: "Component catalogue" });
+  const pagination = catalogue.getByRole("navigation", { name: "Catalogue pagination" });
+  await expect(catalogue.getByRole("heading", { name: "Breadcrumbs" })).toBeVisible();
+
+  const next = pagination.getByRole("link", { name: "Next page" });
+  await expect(next).toHaveAttribute("href", /\?page=2#catalogue$/);
+  await next.press("Enter");
+  await expect(page).toHaveURL(/\?page=2#catalogue$/);
+  await expect(pagination.getByRole("link", { name: "Page 2", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(catalogue.getByRole("heading", { name: "Data table" })).toBeVisible();
+  await expect(catalogue).toBeFocused();
+
+  await page.reload();
+  await expect(catalogue.getByRole("heading", { name: "Data table" })).toBeVisible();
+  await page.goBack();
+  await expect(catalogue.getByRole("heading", { name: "Breadcrumbs" })).toBeVisible();
+});
+
+test("a failed catalogue request is announced without rendering broken navigation", async ({ page }) => {
+  await page.route("**/catalogue.json", (route) => route.fulfill({ status: 503 }));
+  await page.reload();
+
+  const catalogue = page.getByRole("region", { name: "Component catalogue" });
+  await expect(catalogue.getByRole("status")).toContainText("Could not load the catalogue");
+  await expect(catalogue.getByRole("navigation")).toHaveCount(0);
+});
+
+test("an invalid catalogue payload is announced as a loading error", async ({ page }) => {
+  await page.route("**/catalogue.json", (route) => route.fulfill({ json: null }));
+  await page.reload();
+
+  const catalogue = page.getByRole("region", { name: "Component catalogue" });
+  await expect(catalogue.getByRole("status")).toContainText("Could not load the catalogue");
+  await expect(catalogue.getByRole("navigation")).toHaveCount(0);
 });
