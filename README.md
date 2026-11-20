@@ -135,8 +135,10 @@ The browser suite combines axe-core scans with keyboard, forced-color, and reflo
 
 ## Publishing
 
-Merging into `main` runs CI and then publishes the same tarball that passed the package tests. A version already on npm or a run for an older commit is skipped. Stable versions publish to `latest`, and prereleases publish to `next`.
+Merging into `main` runs CI and submits the same tarball that passed the package tests to npm for review. The workflow skips versions already published and runs for older commits. After approval, stable versions use `latest` and prereleases use `next`.
 
-Before the first release, add a GitHub Actions trusted publisher in the npm package settings. Use owner `97Dmitry`, repository `best-react-pagination`, and workflow filename `publish.yml`. Leave the environment empty and enable direct `npm publish`. An optional label is `GitHub Actions - main release`. The first successful publish must occur within two days of adding the publisher. [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
+In the npm package settings, configure a GitHub Actions trusted publisher with owner `97Dmitry`, repository `best-react-pagination`, and workflow filename `publish.yml`. Leave the environment empty and keep **Allow npm publish** unchecked to require manual approval. An optional label is `GitHub Actions - main release`. [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
 
-If this setup is completed after a publish job fails, rerun the failed job on the latest `main` run to reuse its verified tarball. Rerun the entire workflow if the artifact has expired.
+After the staging job succeeds, open **Staged Packages** on npmjs.com, review the version and archive checksum, and approve it with 2FA. The CI log shows the stage ID and archive checksum. [npm staged publishing](https://docs.npmjs.com/staged-publishing/)
+
+If staging fails, rerun the failed job on the latest `main` run to reuse its verified tarball. Rerun the entire workflow if the artifact has expired. If npm reports that the version is already staged, inspect the existing entry before approving it. To replace it, reject the existing stage in npm and rerun the staging job.
