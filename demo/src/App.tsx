@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Pagination from "../../lib/pagination";
 import "../../lib/styles.css";
+import CatalogueExample from "./CatalogueExample";
 import "./demo.css";
 
 const totalPages = 24;
@@ -32,7 +33,7 @@ function Example({ title, usage, initialPage, zeroBased, compact, custom }: Exam
           paginationStart={paginationStart}
           currentIndex={index}
           totalPages={totalPages}
-          setIndex={setIndex}
+          onPageChange={setIndex}
           isDefaultStyles={!custom}
           variant={compact ? "compact" : "default"}
           className={custom ? "custom-pagination" : undefined}
@@ -61,6 +62,7 @@ export default function App() {
         <Example title="Compact" usage={'isDefaultStyles variant="compact"'} initialPage={5} compact />
         <Example title="Custom CSS" usage="isDefaultStyles={false}" initialPage={24} zeroBased custom />
       </div>
+      <CatalogueExample />
     </main>
   );
 }

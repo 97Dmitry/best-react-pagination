@@ -5,6 +5,13 @@
   --accent: #274dc3;
   --surface: #fff;
   --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  --brp-text: var(--ink);
+  --brp-muted: var(--muted);
+  --brp-border: #7589ae;
+  --brp-background: var(--surface);
+  --brp-hover: #e3ebff;
+  --brp-accent: var(--accent);
+  --brp-focus: var(--accent);
 
   background: #ecf1f8;
   color: var(--ink);
@@ -122,14 +129,6 @@ code {
 }
 
 .example__preview {
-  --brp-text: var(--ink);
-  --brp-muted: var(--muted);
-  --brp-border: #7589ae;
-  --brp-background: var(--surface);
-  --brp-hover: #e3ebff;
-  --brp-accent: var(--accent);
-  --brp-focus: var(--accent);
-
   min-inline-size: 0;
   padding: 0.75rem clamp(0.625rem, 2vw, 1.25rem) 0.875rem;
   border-radius: 0.75rem;
@@ -141,6 +140,52 @@ code {
   font-size: 0.8125rem;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
+}
+
+.catalogue {
+  margin-block-start: 1rem;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--surface);
+}
+
+.catalogue:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.catalogue__intro,
+.catalogue__status,
+.catalogue__items p {
+  color: var(--muted);
+}
+
+.catalogue__status {
+  margin-block-start: 1rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.catalogue__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: 0.625rem;
+  padding: 0;
+  margin-block: 0.75rem 1rem;
+  list-style: none;
+}
+
+.catalogue__items li {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #f0f4fb;
+  overflow-wrap: anywhere;
+}
+
+.catalogue__items h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
 }
 
 .custom-pagination {
