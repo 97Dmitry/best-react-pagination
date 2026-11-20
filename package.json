@@ -1,6 +1,6 @@
 {
   "name": "best-react-pagination",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Accessible pagination for React",
   "type": "module",
   "main": "./dist/pagination.cjs",
