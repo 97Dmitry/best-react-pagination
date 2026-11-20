@@ -31,7 +31,7 @@
   color: var(--brp-muted, #526860);
 }
 
-:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button {
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a) {
   box-sizing: border-box;
   appearance: none;
   min-block-size: var(--brp-control-size, var(--_brp-control-size));
@@ -48,11 +48,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where(:hover:not([aria-disabled], [aria-current])) {
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > a {
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where(:hover:not([aria-disabled], [aria-current])) {
   background: var(--brp-hover, #e9f5ec);
 }
 
-:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-current="page"]) {
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where([aria-current="page"]) {
   border-color: var(--brp-accent, #165347);
   background: var(--brp-accent, #165347);
   color: var(--brp-on-accent, #ffffff);
@@ -61,30 +67,30 @@
   text-underline-offset: 0.18em;
 }
 
-:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-disabled="true"]) {
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where([aria-disabled="true"]) {
   color: var(--brp-muted, #526860);
   cursor: default;
   opacity: 0.65;
 }
 
-:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where(:focus-visible) {
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where(:focus-visible) {
   outline: 2px solid var(--brp-focus, #176c58);
   outline-offset: 2px;
   opacity: 1;
 }
 
 @media (forced-colors: active) {
-  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-current="page"]) {
+  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where([aria-current="page"]) {
     border-color: Highlight;
   }
 
-  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where([aria-disabled="true"]) {
+  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where([aria-disabled="true"]) {
     border-color: GrayText;
     color: GrayText;
     opacity: 1;
   }
 
-  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > button:where(:focus-visible) {
+  :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where(:focus-visible) {
     outline-color: Highlight;
   }
 }

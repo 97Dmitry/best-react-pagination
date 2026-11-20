@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import Pagination from "best-react-pagination";
+import Pagination, * as pagination from "best-react-pagination";
 
 function render(props = {}) {
   return renderToStaticMarkup(React.createElement(Pagination, {
@@ -75,7 +75,8 @@ test("selecting the clamped page corrects an out-of-range controlled index", () 
       totalPages: 1,
       setIndex: (index) => changes.push(index),
     };
-    const [, [page]] = Pagination(props).props.children.props.children;
+    const page = Pagination(props).props.children.props.children.flat()
+      .find((item) => item.props["data-pagination-item"] === "page");
 
     assert.deepEqual(changes, []);
     page.props.children.props.onClick();
@@ -129,4 +130,75 @@ test("blank localized labels retain accessible defaults", () => {
   for (const label of ["Pagination", "Previous page", "Next page", "Page 1"]) {
     assert.ok(markup.includes(`aria-label="${label}"`));
   }
+});
+
+test("onPageChange receives the next index and takes precedence over the legacy setter", () => {
+  for (const paginationStart of [0, 1]) {
+    const changes = [];
+    const props = {
+      paginationStart,
+      currentIndex: paginationStart,
+      totalPages: 4,
+      onPageChange: (index) => changes.push(index),
+      setIndex() { assert.fail("Only one handler should run"); },
+    };
+
+    const controls = Pagination(props).props.children.props.children.flat().map((item) => item.props.children);
+    controls.find((control) => control.props["aria-current"] === "page").props.onClick();
+    controls.at(-1).props.onClick();
+    assert.deepEqual(changes, [paginationStart + 1]);
+  }
+});
+
+test("link mode renders real destinations in the configured index base and disables boundary links", () => {
+  const markup = render({
+    paginationStart: 0,
+    currentIndex: 0,
+    totalPages: 3,
+    setIndex: undefined,
+    getPageHref: (index) => `?page=${index}`,
+  });
+
+  assert.doesNotMatch(markup, /<button/);
+  assert.match(markup, /<a\b(?=[^>]*href="\?page=0")(?=[^>]*aria-current="page")[^>]*>1<\/a>/);
+  assert.match(markup, /<a\b(?=[^>]*href="\?page=1")(?=[^>]*aria-label="Next page")[^>]*>/);
+  const previous = markup.match(/<a\b(?=[^>]*aria-label="Previous page")[^>]*>/)?.[0];
+  assert.match(previous ?? "", /aria-disabled="true"/);
+  assert.doesNotMatch(previous, /\bhref=/);
+});
+
+test("visible pages honor sibling and boundary counts", () => {
+  const markup = render({ totalPages: 12, currentIndex: 6, siblingCount: 2, boundaryCount: 2 });
+  assert.deepEqual(pageNumbers(markup), [1, 2, 3, 4, 5, 6, 7, 8, 11, 12]);
+  assert.equal((markup.match(/data-pagination-item="ellipsis"/g) ?? []).length, 1);
+});
+
+test("the headless items expose page indices, gaps and disabled boundaries", () => {
+  assert.equal(typeof pagination.getPaginationItems, "function");
+  const getItems = pagination.getPaginationItems;
+
+  assert.deepEqual(getItems({ currentIndex: 0, totalPages: 0, paginationStart: 0 }), []);
+  assert.deepEqual(getItems({ currentIndex: 9, totalPages: 1, paginationStart: 0 }), [
+    { type: "previous", index: null },
+    { type: "page", index: 0, page: 1, current: true },
+    { type: "next", index: null },
+  ]);
+  assert.deepEqual(getItems({ currentIndex: 4, totalPages: 10, paginationStart: 0, siblingCount: 0, boundaryCount: 0 }), [
+    { type: "previous", index: 3 },
+    { type: "ellipsis", side: "start" },
+    { type: "page", index: 4, page: 5, current: true },
+    { type: "ellipsis", side: "end" },
+    { type: "next", index: 5 },
+  ]);
+
+  const totalPages = Number.MAX_SAFE_INTEGER;
+  const items = getItems({
+    currentIndex: totalPages,
+    totalPages,
+    paginationStart: 1,
+    siblingCount: totalPages,
+    boundaryCount: totalPages,
+  });
+  assert.ok(items.length <= 205);
+  assert.deepEqual(items.at(-2), { type: "page", index: totalPages, page: totalPages, current: true });
 });
