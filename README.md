@@ -4,7 +4,7 @@
 
 A controlled React pagination component with keyboard navigation, two built-in styles, and an unstyled mode.
 
-[Open the demo in CodeSandbox](https://codesandbox.io/p/devbox/6f2gcv)
+[Open the interactive demo](https://97dmitry.github.io/best-react-pagination/)
 
 ```sh
 npm install best-react-pagination
