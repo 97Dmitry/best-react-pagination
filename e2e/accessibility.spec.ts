@@ -123,3 +123,12 @@ test("a failed catalogue request is announced without rendering broken navigatio
   await expect(catalogue.getByRole("status")).toContainText("Could not load the catalogue");
   await expect(catalogue.getByRole("navigation")).toHaveCount(0);
 });
+
+test("an invalid catalogue payload is announced as a loading error", async ({ page }) => {
+  await page.route("**/catalogue.json", (route) => route.fulfill({ json: null }));
+  await page.reload();
+
+  const catalogue = page.getByRole("region", { name: "Component catalogue" });
+  await expect(catalogue.getByRole("status")).toContainText("Could not load the catalogue");
+  await expect(catalogue.getByRole("navigation")).toHaveCount(0);
+});

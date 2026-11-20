@@ -28,7 +28,12 @@ export default function CatalogueExample() {
       try {
         const response = await fetch(`${import.meta.env.BASE_URL}catalogue.json`, { signal: controller.signal });
         if (!response.ok) throw new Error(`Catalogue request failed (${response.status})`);
-        const entries: CatalogueEntry[] = await response.json();
+        const entries: unknown = await response.json();
+        if (!Array.isArray(entries) || !entries.every((entry): entry is CatalogueEntry =>
+          typeof entry?.name === "string" && typeof entry?.description === "string"
+        )) {
+          throw new Error("Invalid catalogue response");
+        }
         if (!controller.signal.aborted) setState({ status: "ready", entries });
       } catch {
         if (!controller.signal.aborted) setState({ status: "error" });
