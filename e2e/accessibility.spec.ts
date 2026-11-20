@@ -1,0 +1,97 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("navigation")).toHaveCount(3);
+});
+
+test("the demo has no detectable WCAG 2.2 AA violations before or after navigation", async ({ page }) => {
+  const scan = () => new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+    .analyze();
+
+  expect((await scan()).violations).toEqual([]);
+
+  const compact = page.getByRole("navigation", { name: "Compact pagination" });
+  await compact.getByRole("button", { name: "Next page" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Page 6 of 24" })).toBeVisible();
+  expect((await scan()).violations).toEqual([]);
+});
+
+test("keyboard activation changes pages and preserves focus at the boundary", async ({ page }) => {
+  const normal = page.getByRole("navigation", { name: "Default pagination" });
+  await page.getByRole("link", { name: "GitHub" }).focus();
+  await page.keyboard.press("Tab");
+  await expect(normal.getByRole("button", { name: "Page 1", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Space");
+  await expect(normal.getByRole("button", { name: "Page 2", exact: true })).toHaveAttribute("aria-current", "page");
+  const normalPrevious = normal.getByRole("button", { name: "Previous page" });
+  await normalPrevious.focus();
+  await page.keyboard.press("Enter");
+  await expect(normalPrevious).toBeDisabled();
+  await expect(normalPrevious).toBeFocused();
+  await expect(normalPrevious).toHaveCSS("opacity", "1");
+
+  const custom = page.getByRole("navigation", { name: "Custom CSS pagination" });
+  const previous = custom.getByRole("button", { name: "Previous page" });
+  const next = custom.getByRole("button", { name: "Next page" });
+  await previous.focus();
+  await page.keyboard.press("Enter");
+  await expect(custom.getByRole("button", { name: "Page 23", exact: true })).toHaveAttribute("aria-current", "page");
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(next).toBeDisabled();
+  await expect(next).toBeFocused();
+  await expect(next).toHaveCSS("outline-style", "solid");
+  await expect(next).toHaveCSS("opacity", "1");
+  await page.keyboard.press("Enter");
+  await expect(custom.getByRole("button", { name: "Page 24", exact: true })).toHaveAttribute("aria-current", "page");
+  await page.keyboard.press("Shift+Tab");
+  await expect(custom.getByRole("button", { name: "Page 24", exact: true })).toBeFocused();
+});
+
+test("the current page and focus remain distinguishable in forced colors", async ({ page }) => {
+  await page.emulateMedia({ forcedColors: "active" });
+  for (const navigation of await page.getByRole("navigation").all()) {
+    const current = navigation.locator('button[aria-current="page"]');
+    await expect(current).toHaveCSS("text-decoration-line", "underline");
+    await current.focus();
+    await expect(current).toHaveCSS("outline-style", "solid");
+  }
+});
+
+test("controls reflow at a narrow width with enlarged text and keep usable targets", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  for (const control of await page.getByRole("button").all()) {
+    const box = await control.boundingBox();
+    expect(box?.width).toBeGreaterThanOrEqual(24);
+    expect(box?.height).toBeGreaterThanOrEqual(24);
+  }
+
+  await page.addStyleTag({ content: "html { font-size: 200% }" });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+
+  for (const navigation of await page.getByRole("navigation").all()) {
+    await navigation.locator('[data-pagination-item="page"] button').last().evaluate((button) => {
+      button.textContent = String(Number.MAX_SAFE_INTEGER);
+    });
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+});
+
+test("RTL layouts follow reading direction while Next advances the page", async ({ page }) => {
+  await page.locator("html").evaluate((root) => root.setAttribute("dir", "rtl"));
+  const compact = page.getByRole("navigation", { name: "Compact pagination" });
+  const previous = compact.getByRole("button", { name: "Previous page" });
+  const next = compact.getByRole("button", { name: "Next page" });
+
+  await expect(compact).toHaveCSS("direction", "rtl");
+  const previousBox = await previous.boundingBox();
+  const nextBox = await next.boundingBox();
+  expect(previousBox?.x).toBeGreaterThan(nextBox?.x ?? Infinity);
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(compact.getByRole("button", { name: "Page 6", exact: true })).toHaveAttribute("aria-current", "page");
+});
