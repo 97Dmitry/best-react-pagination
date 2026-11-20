@@ -1,4 +1,4 @@
-name: Verify and publish npm package
+name: Verify and stage npm package
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
   verify:
     uses: ./.github/workflows/ci.yml
 
-  publish:
+  stage:
     if: github.repository == '97Dmitry/best-react-pagination' && github.ref == 'refs/heads/main'
     needs: verify
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
           name: verified-npm-package
           path: ${{ runner.temp }}/verified-npm-package
           digest-mismatch: error
-      - name: Publish verified package to npm
+      - name: Stage verified package for npm approval
         env:
           NPM_TARBALL: ${{ runner.temp }}/verified-npm-package/npm-package.tgz
-        run: node scripts/publish-package.mjs "$NPM_TARBALL"
+        run: node scripts/stage-package.mjs "$NPM_TARBALL"
