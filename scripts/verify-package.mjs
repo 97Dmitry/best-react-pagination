@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
-import { copyFile, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const npm = process.env.npm_execpath;
@@ -22,6 +22,7 @@ function run(args, cwd = process.cwd()) {
 try {
   run([npm, "pack", "--pack-destination", scratch]);
   const [tarball] = await readdir(scratch);
+  const archive = join(scratch, tarball);
 
   for (const version of reactVersions.length ? reactVersions : ["16.8.0", "17", "18", "19"]) {
     const major = version.split(".")[0];
@@ -30,7 +31,7 @@ try {
     await writeFile(join(consumer, "package.json"), '{"private":true}\n');
     run([
       npm, "install", "--ignore-scripts", "--no-audit", "--no-fund",
-      join(scratch, tarball),
+      archive,
       `react@${version}`, `react-dom@${version}`, `@types/react@${typesVersion}`, `@types/react-dom@${typesVersion}`,
     ], consumer);
 
@@ -64,6 +65,12 @@ try {
       assert.match(stylesheet, /data-pagination-variant/);
       console.log("Verified packed runtime, CSS and declarations on React " + React.version);
     `], consumer);
+  }
+
+  if (process.env.NPM_VERIFIED_TARBALL) {
+    const output = resolve(process.env.NPM_VERIFIED_TARBALL);
+    await mkdir(dirname(output), { recursive: true });
+    await copyFile(archive, output);
   }
 } finally {
   await rm(scratch, { recursive: true, force: true });
