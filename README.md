@@ -1,6 +1,10 @@
 # best-react-pagination
 
+[![npm](https://nodei.co/npm/best-react-pagination.png?downloads=true)](https://www.npmjs.com/package/best-react-pagination)
+
 A controlled React pagination component with keyboard navigation, two built-in styles, and an unstyled mode.
+
+[Open the demo in CodeSandbox](https://codesandbox.io/p/devbox/6f2gcv)
 
 ```sh
 npm install best-react-pagination
@@ -109,36 +113,11 @@ When changing pages replaces results in place, announce the update from the resu
 
 Custom styles should keep a visible keyboard focus ring, distinguish the current page by more than color, and leave enough room for the controls to wrap with increased text size.
 
-### Upgrading from 0.1.x
-
-Import `best-react-pagination/styles.css` in your application if you use `isDefaultStyles`. Update any element-specific selectors to match the new `<nav>` root and the buttons nested inside list items.
-
-## Development
+## Local demo
 
 Use the Node.js version in `.nvmrc`.
 
 ```sh
 npm ci
 npm run dev
-npm run lint
-npm run typecheck
-npm test
-npm run build:demo
-npm run test:pack
-npx playwright install chromium
-npm run test:a11y
 ```
-
-The library and demo share the component in `lib/`. `npm pack` builds the distributable files. The package check installs the resulting archive in clean consumers and checks server rendering, TypeScript declarations, and the CSS export on React 16.8, 17, 18, and 19.
-
-The browser suite combines axe-core scans with keyboard, forced-color, and reflow checks. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to run it with an existing local Chromium installation.
-
-## Publishing
-
-Merging into `main` runs CI and submits the same tarball that passed the package tests to npm for review. The workflow skips versions already published and runs for older commits. After approval, stable versions use `latest` and prereleases use `next`.
-
-In the npm package settings, configure a GitHub Actions trusted publisher with owner `97Dmitry`, repository `best-react-pagination`, and workflow filename `publish.yml`. Leave the environment empty and keep **Allow npm publish** unchecked to require manual approval. An optional label is `GitHub Actions - main release`. [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
-
-After the staging job succeeds, open **Staged Packages** on npmjs.com, review the version and archive checksum, and approve it with 2FA. The CI log shows the stage ID and archive checksum. [npm staged publishing](https://docs.npmjs.com/staged-publishing/)
-
-If staging fails, rerun the failed job on the latest `main` run to reuse its verified tarball. Rerun the entire workflow if the artifact has expired. If npm reports that the version is already staged, inspect the existing entry before approving it. To replace it, reject the existing stage in npm and rerun the staging job.
