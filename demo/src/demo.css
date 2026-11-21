@@ -105,6 +105,32 @@ code {
   background: var(--surface);
 }
 
+.examples__settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem clamp(0.75rem, 3vw, 1.75rem);
+  border-block-end: 1px solid var(--line);
+  font-weight: 650;
+}
+
+.examples__settings select {
+  max-inline-size: 100%;
+  min-block-size: 2.5rem;
+  padding-inline: 0.5rem;
+  border: 1px solid var(--brp-border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.examples__settings select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .example {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);

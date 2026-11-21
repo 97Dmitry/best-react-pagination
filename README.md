@@ -37,6 +37,30 @@ Use `variant="compact"` for smaller controls. The stylesheet is shared by both v
 
 You can override the CSS variables on the root element using `className`. The themes expose `--brp-control-size`, `--brp-gap`, `--brp-radius`, `--brp-text`, `--brp-muted`, `--brp-border`, `--brp-background`, `--brp-hover`, `--brp-accent`, `--brp-on-accent`, and `--brp-focus`.
 
+## Range behavior
+
+`behavior` controls the page range independently of `variant`, which controls the theme.
+
+- `"between"` is used when `behavior` is omitted. It keeps the number of numbered controls steady and places ellipses between them. With built-in styles, the arrows stay in place when the controls fit in one row. With custom styles, use the gap selectors below to lay out the ellipses.
+- `"default"` fills single-page gaps with the page number.
+- `"separate"` keeps the number of numbered controls steady as the range moves. Each ellipsis occupies its own list item.
+
+In `"between"` and `"separate"`, the visible window can shift early near either end of the range. For example, with 24 pages and the default counts, page 4 shows `1 … 4 5 6 … 24`.
+
+The built-in `"between"` layout uses inline CSS custom properties to keep the arrow positions stable. If your Content Security Policy blocks inline style attributes, the controls can still wrap and the arrows may move as ellipses appear.
+
+```tsx
+<Pagination
+  paginationStart={1}
+  currentIndex={page}
+  totalPages={24}
+  onPageChange={setPage}
+  behavior="between"
+  variant="compact"
+  isDefaultStyles
+/>
+```
+
 ## Links and URL state
 
 Use `getPageHref` when each page has its own URL. Read the current page from your route and pass it as `currentIndex`. The links support opening a page in a new tab and native browser history.
@@ -68,6 +92,7 @@ Use `isDefaultStyles={false}` or omit the flag. Apply your own CSS through `clas
   currentIndex={page}
   onPageChange={setPage}
   totalPages={24}
+  behavior="separate"
   className="results-pagination"
   isDefaultStyles={false}
 />
@@ -102,13 +127,14 @@ Use `isDefaultStyles={false}` or omit the flag. Apply your own CSS through `clas
 | `[data-pagination-item="page"]` | List item around a page control |
 | `[data-pagination-item="previous"]`, `[data-pagination-item="next"]` | List items around navigation controls |
 | `[data-pagination-item="ellipsis"]` | Gap representing omitted pages |
+| `[data-pagination-gap-before]` and `[data-pagination-gap]` | Control wrapper and decorative ellipsis when using `behavior="between"` |
 | `[data-pagination-control]` | Button or link inside a pagination item |
 | `[data-pagination-control][aria-current="page"]` | Current page |
 | `[data-pagination-control][aria-disabled="true"]` | Navigation control at a boundary |
 
 ## Custom markup
 
-Use the named export `getPaginationItems` to render the same page range with your own components.
+Use the named export `getPaginationItems` to render the same page range with your own components. It accepts the same `behavior` values as the component.
 
 ```ts
 import { getPaginationItems } from "best-react-pagination";
@@ -138,8 +164,9 @@ Mark the current page with `aria-current="page"`, give controls accessible names
 | `onPageChange` | `(index: number) => void` | Receives the requested index when the user activates a button and the index differs from `currentIndex`. It takes precedence over `setIndex` if both are supplied. |
 | `setIndex` | `React.Dispatch<React.SetStateAction<number>>` | Existing React setter prop. It remains supported in button mode when `onPageChange` is omitted. |
 | `getPageHref` | `(index: number) => string` | Enables link mode and returns the destination for each available page control. |
-| `siblingCount` | `number` | Number of neighboring pages on each side of the current page. Defaults to `1`. |
+| `siblingCount` | `number` | Controls the size of the visible window around the current page. Defaults to `1`. |
 | `boundaryCount` | `number` | Number of pages kept visible at each end of the range. Defaults to `1`. |
+| `behavior` | `PaginationBehavior` | Page range and ellipsis layout. Accepts `"between"`, `"default"`, or `"separate"`. Falls back to `"between"` when omitted. |
 | `isDefaultStyles` | `boolean` | Enables the built-in styles when the stylesheet is imported. Defaults to `false`. |
 | `variant` | `"default" \| "compact"` | Built-in style variant. Defaults to `"default"`. |
 | `aria-label` | `string` | Accessible label for the navigation landmark. Defaults to `"Pagination"`. Give each landmark a distinct label when it controls a different list. |
@@ -150,7 +177,7 @@ Mark the current page with `aria-current="page"`, give controls accessible names
 | `itemListClass` | `string` | Page list class. |
 | `itemClass`, `selectedItemClass`, `disableItemClass` | `string` | Classes on list items in their ordinary, current, and disabled or ellipsis states. |
 
-Both range counts accept safe integers clamped to `0`–`50`. Other values use the defaults. The window shifts near the ends of the range. When just one page separates two visible ranges, it is shown in place of an ellipsis.
+Both range counts accept safe integers clamped to `0`–`50`. Other values use the defaults. The window shifts near the ends of the range.
 
 React 16.8 and later are supported. The component has ESM and CommonJS entry points and is safe to render on the server. In CommonJS use `require("best-react-pagination").default`. TypeScript consumers can import `PaginationComponentProps` for all modes. The existing `PaginationProps` interface covers the `setIndex` form. `PaginationRangeOptions` and `PaginationItem` describe the headless API.
 
