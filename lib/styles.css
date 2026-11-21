@@ -54,6 +54,54 @@
   text-decoration: none;
 }
 
+:where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] {
+  --_brp-base-gap: var(--brp-gap, var(--_brp-gap));
+  --_brp-button-gap: var(--_brp-base-gap);
+  --_brp-ellipsis-size: 1.25rem;
+  --_brp-preferred-size: max(var(--brp-control-size, var(--_brp-control-size)), calc(var(--_brp-page-digits) * 1ch + 0.5em + 2px));
+  --_brp-spacing-size: calc(2 * var(--_brp-ellipsis-size) + (var(--_brp-controls) + 1) * var(--_brp-base-gap));
+  --_brp-fit-size: clamp(1.5rem, calc((100% - var(--_brp-spacing-size) - 1px) / var(--_brp-controls)), var(--_brp-preferred-size));
+  box-sizing: border-box;
+  column-gap: 0;
+  inline-size: min(100%, calc(var(--_brp-controls) * var(--_brp-preferred-size) + var(--_brp-spacing-size)));
+}
+
+:where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count="1"] {
+  /* Distribute the space for the second ellipsis across the remaining gaps. */
+  --_brp-button-gap: calc(var(--_brp-base-gap) + (var(--_brp-ellipsis-size) + var(--_brp-base-gap)) / (var(--_brp-controls) - 2));
+}
+
+:where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item] {
+  inline-size: var(--_brp-fit-size);
+}
+
+:where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item] + [data-pagination-item] {
+  margin-inline-start: var(--_brp-button-gap);
+}
+
+:where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item][data-pagination-gap-before] {
+  position: relative;
+  margin-inline-start: calc(2 * var(--_brp-base-gap) + var(--_brp-ellipsis-size));
+}
+
+:where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item] > [data-pagination-control] {
+  inline-size: 100%;
+  min-inline-size: 0;
+  padding-inline: 0.25em;
+}
+
+:where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > [data-pagination-gap] {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: calc(100% + var(--_brp-base-gap));
+  inline-size: var(--_brp-ellipsis-size);
+  color: var(--brp-muted, #526860);
+  line-height: 1;
+  text-align: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 :where([data-pagination-variant]) > [data-pagination-list] > [data-pagination-item] > :is(button, a):where(:hover:not([aria-disabled], [aria-current])) {
   background: var(--brp-hover, #e9f5ec);
 }

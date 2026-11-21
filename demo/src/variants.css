@@ -1,0 +1,4 @@
+.comparison .example__description p {
+  color: var(--muted);
+  font-size: 0.875rem;
+}

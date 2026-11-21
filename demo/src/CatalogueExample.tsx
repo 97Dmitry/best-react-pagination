@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Pagination from "../../lib/pagination";
+import Pagination, { type PaginationBehavior } from "../../lib/pagination";
 
 interface CatalogueEntry {
   name: string;
@@ -16,7 +16,7 @@ function cataloguePageHref(index: number) {
   return `?${params}#catalogue`;
 }
 
-export default function CatalogueExample() {
+export default function CatalogueExample({ behavior }: { behavior: PaginationBehavior }) {
   const catalogue = useRef<HTMLElement>(null);
   const [state, setState] = useState<CatalogueState>({ status: "loading" });
 
@@ -76,6 +76,7 @@ export default function CatalogueExample() {
         currentIndex={currentPage}
         totalPages={totalPages}
         siblingCount={0}
+        behavior={behavior}
         getPageHref={cataloguePageHref}
         isDefaultStyles
       />

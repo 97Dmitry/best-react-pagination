@@ -19,9 +19,57 @@ test("the demo has no detectable WCAG 2.2 AA violations before or after navigati
   expect((await scan()).violations).toEqual([]);
 });
 
+test("the demo switches pagination behavior without resetting the page", async ({ page }) => {
+  const selector = page.getByRole("combobox", { name: "Pagination behavior" });
+  const normal = page.getByRole("navigation", { name: "Default pagination" });
+  const compact = page.getByRole("navigation", { name: "Compact pagination" });
+  await expect(selector).toHaveValue("between", { timeout: 1500 });
+
+  await normal.getByRole("button", { name: "Page 4", exact: true }).click();
+  await expect(normal.locator("[data-pagination-gap]")).toHaveCount(2);
+
+  await selector.selectOption("default");
+  await expect(normal.getByRole("button", { name: "Page 2", exact: true })).toBeVisible();
+
+  await selector.selectOption("between");
+  await expect(normal.locator('[aria-current="page"]')).toHaveText("4");
+  await expect(normal.locator("[data-pagination-gap]")).toHaveCount(2);
+  await expect(compact.locator("[data-pagination-gap]")).toHaveCount(2);
+
+  await selector.selectOption("separate");
+  await expect(normal.locator('[data-pagination-item="ellipsis"]')).toHaveCount(2);
+
+  await selector.selectOption("default");
+  await expect(normal.getByRole("button", { name: "Page 2", exact: true })).toBeVisible();
+  await expect(normal.locator('[aria-current="page"]')).toHaveText("4");
+});
+
+test("catalogue pagination follows the selected behavior across page links", async ({ page }) => {
+  const selector = page.getByRole("combobox", { name: "Pagination behavior" });
+  const catalogue = page.getByRole("region", { name: "Component catalogue" });
+  const pagination = catalogue.getByRole("navigation", { name: "Catalogue pagination" });
+
+  await selector.selectOption("between");
+  await expect(pagination.locator("[data-pagination-gap]")).toHaveCount(1, { timeout: 1500 });
+
+  await selector.selectOption("separate");
+  await expect(pagination.locator('[data-pagination-item="ellipsis"]')).toHaveCount(1);
+  await pagination.getByRole("link", { name: "Next page" }).click();
+  await expect(catalogue.getByRole("heading", { name: "Data table" })).toBeVisible();
+  await expect(pagination.locator('[aria-current="page"]')).toHaveText("2");
+  await expect(selector).toHaveValue("separate");
+  await expect(pagination.locator('[data-pagination-item="ellipsis"]')).toHaveCount(1);
+
+  await selector.selectOption("default");
+  await expect(pagination).not.toHaveAttribute("data-pagination-behavior");
+  await expect(pagination.locator('[aria-current="page"]')).toHaveText("2");
+});
+
 test("keyboard activation changes pages and preserves focus at the boundary", async ({ page }) => {
   const normal = page.getByRole("navigation", { name: "Default pagination" });
   await page.getByRole("link", { name: "GitHub" }).focus();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("combobox", { name: "Pagination behavior" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(normal.getByRole("button", { name: "Page 1", exact: true })).toBeFocused();
   await page.keyboard.press("Tab");
@@ -51,6 +99,30 @@ test("keyboard activation changes pages and preserves focus at the boundary", as
   await page.keyboard.press("Shift+Tab");
   await expect(custom.getByRole("button", { name: "Page 24", exact: true })).toBeFocused();
 });
+
+for (const width of [1080, 375, 320]) {
+  test(`between keeps Next in place when an ellipsis appears at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.getByRole("link", { name: "Compare pagination behaviors" }).click();
+    const pagination = page.getByRole("navigation", { name: "Ellipses between buttons", exact: true });
+    await expect(pagination).toHaveAttribute("data-pagination-behavior", "between");
+    const next = pagination.getByRole("button", { name: "Next page" });
+    await next.scrollIntoViewIfNeeded();
+    const position = await next.boundingBox();
+    if (!position) throw new Error("The Next button must be visible");
+    const x = position.x + position.width / 2;
+    const y = position.y + position.height / 2;
+
+    await page.mouse.click(x, y);
+    await expect(pagination.locator('[aria-current="page"]')).toHaveText("4");
+    await expect(pagination.locator("[data-pagination-gap]")).toHaveCount(2);
+    const after = await next.boundingBox();
+    expect(after?.x).toBeCloseTo(position.x, 0);
+    expect(after?.y).toBeCloseTo(position.y, 0);
+    await page.mouse.click(x, y);
+    await expect(pagination.locator('[aria-current="page"]')).toHaveText("5");
+  });
+}
 
 test("the current page and focus remain distinguishable in forced colors", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active" });
