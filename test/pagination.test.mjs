@@ -30,12 +30,13 @@ test("both index bases select the same visible page and emit indices in their ow
   for (const paginationStart of [0, 1]) {
     const currentIndex = paginationStart + 4;
     const changes = [];
-    const props = { paginationStart, currentIndex, totalPages: 10, setIndex: (index) => changes.push(index) };
+    const props = { paginationStart, currentIndex, totalPages: 10, behavior: "default", setIndex: (index) => changes.push(index) };
 
     assert.match(render(props), /aria-current="page"[^>]*>5<\/button>/);
     const items = Pagination(props).props.children.props.children;
-    items.flat().forEach(({ props: { children: control } }) => {
-      if (control.type === "button") {
+    items.flat().forEach(({ props: { children } }) => {
+      const control = React.Children.toArray(children).at(-1);
+      if (control?.type === "button") {
         control.props.onClick();
       }
     });
@@ -51,9 +52,9 @@ test("small ranges show every page and styling classes match their states", () =
 });
 
 test("large ranges have a bounded window with no ellipsis for a single missing page", () => {
-  assert.deepEqual(pageNumbers(render({ currentIndex: 4 })), [1, 2, 3, 4, 5, 10]);
-  assert.deepEqual(pageNumbers(render({ currentIndex: 5, totalPages: 1_000_000 })), [1, 4, 5, 6, 1_000_000]);
-  assert.deepEqual(pageNumbers(render({ currentIndex: 10 })), [1, 7, 8, 9, 10]);
+  assert.deepEqual(pageNumbers(render({ currentIndex: 4, behavior: "default" })), [1, 2, 3, 4, 5, 10]);
+  assert.deepEqual(pageNumbers(render({ currentIndex: 5, totalPages: 1_000_000, behavior: "default" })), [1, 4, 5, 6, 1_000_000]);
+  assert.deepEqual(pageNumbers(render({ currentIndex: 10, behavior: "default" })), [1, 7, 8, 9, 10]);
 });
 
 test("shrinking the page count selects the last remaining page without firing a change", () => {
@@ -79,13 +80,13 @@ test("selecting the clamped page corrects an out-of-range controlled index", () 
       .find((item) => item.props["data-pagination-item"] === "page");
 
     assert.deepEqual(changes, []);
-    page.props.children.props.onClick();
+    React.Children.toArray(page.props.children).at(-1).props.onClick();
     assert.deepEqual(changes, [paginationStart]);
   }
 });
 
 test("unstyled markup exposes every CSS hook and applies no built-in presentation", () => {
-  const markup = render({ isDefaultStyles: false, variant: "compact", "aria-label": "Results" });
+  const markup = render({ isDefaultStyles: false, variant: "compact", behavior: "separate", "aria-label": "Results" });
   assert.match(markup, /<nav aria-label="Results"/);
   assert.match(markup, /\bdata-pagination=""/);
   assert.match(markup, /\bdata-pagination-list=""/);
@@ -95,9 +96,9 @@ test("unstyled markup exposes every CSS hook and applies no built-in presentatio
   assert.doesNotMatch(markup, /\b(?:data-pagination-variant|style)=/);
 });
 
-test("built-in variants opt into scoped styles without inline declarations", () => {
+test("built-in variants opt into scoped styles, and small ranges need no inline layout variables", () => {
   assert.match(render({ isDefaultStyles: true }), /data-pagination-variant="default"/);
-  const compact = render({ isDefaultStyles: true, variant: "compact" });
+  const compact = render({ isDefaultStyles: true, variant: "compact", totalPages: 4 });
   assert.match(compact, /data-pagination-variant="compact"/);
   assert.doesNotMatch(compact, /\bstyle=/);
   assert.doesNotMatch(render(), /\bdata-pagination-variant=/);
@@ -143,7 +144,8 @@ test("onPageChange receives the next index and takes precedence over the legacy 
       setIndex() { assert.fail("Only one handler should run"); },
     };
 
-    const controls = Pagination(props).props.children.props.children.flat().map((item) => item.props.children);
+    const controls = Pagination(props).props.children.props.children.flat()
+      .map((item) => React.Children.toArray(item.props.children).at(-1));
     controls.find((control) => control.props["aria-current"] === "page").props.onClick();
     controls.at(-1).props.onClick();
     assert.deepEqual(changes, [paginationStart + 1]);
@@ -168,7 +170,7 @@ test("link mode renders real destinations in the configured index base and disab
 });
 
 test("visible pages honor sibling and boundary counts", () => {
-  const markup = render({ totalPages: 12, currentIndex: 6, siblingCount: 2, boundaryCount: 2 });
+  const markup = render({ totalPages: 12, currentIndex: 6, siblingCount: 2, boundaryCount: 2, behavior: "default" });
   assert.deepEqual(pageNumbers(markup), [1, 2, 3, 4, 5, 6, 7, 8, 11, 12]);
   assert.equal((markup.match(/data-pagination-item="ellipsis"/g) ?? []).length, 1);
 });
@@ -201,4 +203,50 @@ test("the headless items expose page indices, gaps and disabled boundaries", () 
   });
   assert.ok(items.length <= 205);
   assert.deepEqual(items.at(-2), { type: "page", index: totalPages, page: totalPages, current: true });
+});
+
+test("separate and between switch directly to the same range without adding a page button", () => {
+  const cases = [
+    [3, [1, 2, 3, 4, "end", 24]],
+    [4, [1, "start", 4, 5, 6, "end", 24]],
+    [5, [1, "start", 4, 5, 6, "end", 24]],
+    [21, [1, "start", 19, 20, 21, "end", 24]],
+    [22, [1, "start", 21, 22, 23, 24]],
+  ];
+
+  for (const paginationStart of [0, 1]) {
+    for (const behavior of ["separate", "between"]) {
+      for (const [page, expected] of cases) {
+        const currentIndex = page - 1 + paginationStart;
+        const items = pagination.getPaginationItems({ currentIndex, totalPages: 24, paginationStart, behavior });
+        assert.deepEqual(items.slice(1, -1).map((item) => item.type === "page" ? item.page : item.side), expected);
+        assert.equal(items.find((item) => item.current).index, currentIndex);
+      }
+    }
+  }
+
+  assert.deepEqual(pageNumbers(render({ totalPages: 24, currentIndex: 4, behavior: "default" })), [1, 2, 3, 4, 5, 24]);
+});
+
+test("omitting behavior uses the between mode in the component and range helper", () => {
+  const options = { paginationStart: 1, totalPages: 24, currentIndex: 4 };
+  const items = pagination.getPaginationItems(options);
+  assert.deepEqual(items.slice(1, -1).map((item) => item.type === "page" ? item.page : item.side),
+    [1, "start", 4, 5, 6, "end", 24]);
+
+  const markup = render({ ...options, isDefaultStyles: true });
+  assert.deepEqual(pageNumbers(markup), [1, 4, 5, 6, 24]);
+  assert.equal((markup.match(/data-pagination-gap=""/g) ?? []).length, 2);
+});
+
+test("between places decorative gaps next to their controls in button and link mode", () => {
+  const options = { currentIndex: 4, totalPages: 24, behavior: "between" };
+  const unstyled = render(options);
+  assert.match(unstyled, /data-pagination-behavior="between"/);
+  assert.equal((unstyled.match(/<span data-pagination-gap="" aria-hidden="true">…<\/span>/g) ?? []).length, 2);
+  assert.doesNotMatch(unstyled, /data-pagination-item="ellipsis"|\bstyle=/);
+
+  const links = render({ ...options, boundaryCount: 0, setIndex: undefined, getPageHref: (index) => `?page=${index}` });
+  assert.match(links, /data-pagination-item="next" data-pagination-gap-before=""><span[^>]*>…<\/span><a[^>]*href="\?page=5"/);
+  assert.match(render({ ...options, behavior: "separate" }), /data-pagination-item="ellipsis"/);
 });
