@@ -236,7 +236,8 @@ export default function Pagination({
               data-pagination-item={item.type}
               data-pagination-gap-before={gapBefore ? "" : undefined}
             >
-              {gapBefore ? <><span className={disableItemClass} data-pagination-gap="" aria-hidden="true">…</span>{control}</> : control}
+              {gapBefore && <span className={disableItemClass} data-pagination-gap="" aria-hidden="true">…</span>}
+              {control}
             </li>
           );
         })}

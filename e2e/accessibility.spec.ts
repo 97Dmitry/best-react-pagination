@@ -1,5 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+import { fileURLToPath } from "node:url";
+
+async function mountPaginationFixture(page: Page) {
+  const path = fileURLToPath(new URL("./fixtures/pagination.tsx", import.meta.url));
+  await page.addScriptTag({ url: `/@fs/${path}`, type: "module" });
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
@@ -123,6 +129,35 @@ for (const width of [1080, 375, 320]) {
     await expect(pagination.locator('[aria-current="page"]')).toHaveText("5");
   });
 }
+
+test("Next keeps keyboard focus when its leading ellipsis disappears", async ({ page }) => {
+  await mountPaginationFixture(page);
+  const pagination = page.getByRole("navigation", { name: "24-page fixture" });
+  const next = pagination.getByRole("button", { name: "Next page" });
+  await expect(next.locator("..")).toHaveAttribute("data-pagination-gap-before");
+
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(pagination.locator('[aria-current="page"]')).toHaveText("23");
+  await expect(next.locator("..")).not.toHaveAttribute("data-pagination-gap-before");
+  await expect(next).toBeFocused({ timeout: 1500 });
+  await page.keyboard.press("Enter");
+  await expect(pagination.locator('[aria-current="page"]')).toHaveText("24");
+});
+
+test("Next stays aligned when a longer page number wraps in the same row", async ({ page }) => {
+  await mountPaginationFixture(page);
+  const pagination = page.getByRole("navigation", { name: "10000-page fixture" });
+  const current = pagination.locator('[aria-current="page"]');
+  const next = pagination.getByRole("button", { name: "Next page" });
+  const before = await next.boundingBox();
+  if (!before) throw new Error("The Next button must be visible");
+  await next.click();
+  await expect(current).toHaveText("100");
+  const after = await next.boundingBox();
+  expect(after?.x).toBeCloseTo(before.x, 0);
+  expect(after?.y).toBeCloseTo(before.y, 0);
+});
 
 test("the current page and focus remain distinguishable in forced colors", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active" });

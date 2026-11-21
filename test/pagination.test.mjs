@@ -34,8 +34,9 @@ test("both index bases select the same visible page and emit indices in their ow
 
     assert.match(render(props), /aria-current="page"[^>]*>5<\/button>/);
     const items = Pagination(props).props.children.props.children;
-    items.flat().forEach(({ props: { children: control } }) => {
-      if (control.type === "button") {
+    items.flat().forEach(({ props: { children } }) => {
+      const control = React.Children.toArray(children).at(-1);
+      if (control?.type === "button") {
         control.props.onClick();
       }
     });
@@ -79,7 +80,7 @@ test("selecting the clamped page corrects an out-of-range controlled index", () 
       .find((item) => item.props["data-pagination-item"] === "page");
 
     assert.deepEqual(changes, []);
-    page.props.children.props.onClick();
+    React.Children.toArray(page.props.children).at(-1).props.onClick();
     assert.deepEqual(changes, [paginationStart]);
   }
 });
@@ -143,7 +144,8 @@ test("onPageChange receives the next index and takes precedence over the legacy 
       setIndex() { assert.fail("Only one handler should run"); },
     };
 
-    const controls = Pagination(props).props.children.props.children.flat().map((item) => item.props.children);
+    const controls = Pagination(props).props.children.props.children.flat()
+      .map((item) => React.Children.toArray(item.props.children).at(-1));
     controls.find((control) => control.props["aria-current"] === "page").props.onClick();
     controls.at(-1).props.onClick();
     assert.deepEqual(changes, [paginationStart + 1]);

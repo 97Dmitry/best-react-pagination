@@ -62,6 +62,7 @@
   --_brp-spacing-size: calc(2 * var(--_brp-ellipsis-size) + (var(--_brp-controls) + 1) * var(--_brp-base-gap));
   --_brp-fit-size: clamp(1.5rem, calc((100% - var(--_brp-spacing-size) - 1px) / var(--_brp-controls)), var(--_brp-preferred-size));
   box-sizing: border-box;
+  align-items: start;
   column-gap: 0;
   inline-size: min(100%, calc(var(--_brp-controls) * var(--_brp-preferred-size) + var(--_brp-spacing-size)));
 }
@@ -72,11 +73,11 @@
 }
 
 :where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item] {
-  inline-size: var(--_brp-fit-size);
+  inline-size: var(--_brp-fit-size, var(--brp-control-size, var(--_brp-control-size)));
 }
 
 :where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item] + [data-pagination-item] {
-  margin-inline-start: var(--_brp-button-gap);
+  margin-inline-start: var(--_brp-button-gap, var(--_brp-base-gap));
 }
 
 :where([data-pagination-variant]) > [data-pagination-list][data-pagination-ellipsis-count] > [data-pagination-item][data-pagination-gap-before] {

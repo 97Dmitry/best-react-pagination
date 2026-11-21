@@ -45,6 +45,10 @@ You can override the CSS variables on the root element using `className`. The th
 - `"default"` fills single-page gaps with the page number.
 - `"separate"` keeps the number of numbered controls steady as the range moves. Each ellipsis occupies its own list item.
 
+In `"between"` and `"separate"`, the visible window can shift early near either end of the range. For example, with 24 pages and the default counts, page 4 shows `1 … 4 5 6 … 24`.
+
+The built-in `"between"` layout uses inline CSS custom properties to keep the arrow positions stable. If your Content Security Policy blocks inline style attributes, the controls can still wrap and the arrows may move as ellipses appear.
+
 ```tsx
 <Pagination
   paginationStart={1}
@@ -160,7 +164,7 @@ Mark the current page with `aria-current="page"`, give controls accessible names
 | `onPageChange` | `(index: number) => void` | Receives the requested index when the user activates a button and the index differs from `currentIndex`. It takes precedence over `setIndex` if both are supplied. |
 | `setIndex` | `React.Dispatch<React.SetStateAction<number>>` | Existing React setter prop. It remains supported in button mode when `onPageChange` is omitted. |
 | `getPageHref` | `(index: number) => string` | Enables link mode and returns the destination for each available page control. |
-| `siblingCount` | `number` | Number of neighboring pages on each side of the current page. Defaults to `1`. |
+| `siblingCount` | `number` | Controls the size of the visible window around the current page. Defaults to `1`. |
 | `boundaryCount` | `number` | Number of pages kept visible at each end of the range. Defaults to `1`. |
 | `behavior` | `PaginationBehavior` | Page range and ellipsis layout. Accepts `"between"`, `"default"`, or `"separate"`. Falls back to `"between"` when omitted. |
 | `isDefaultStyles` | `boolean` | Enables the built-in styles when the stylesheet is imported. Defaults to `false`. |
